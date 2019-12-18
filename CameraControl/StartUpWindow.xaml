@@ -1,0 +1,47 @@
+﻿<Window x:Class="CameraControl.StartUpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="StartUpWindow" Height="448" Width="535" AllowsTransparency="True" Background="{x:Null}" ShowInTaskbar="False" Topmost="True" WindowStyle="None" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" ContentRendered="Window_ContentRendered" >
+	<Window.Resources>
+		<Storyboard x:Key="OnLoaded1" >
+			<PointAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransformOrigin)" Storyboard.TargetName="background">
+				<EasingPointKeyFrame KeyTime="0" Value="0.5,0.5"/>
+				<EasingPointKeyFrame KeyTime="0:0:4" Value="0.5,0.5"/>
+			</PointAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(RotateTransform.Angle)" Storyboard.TargetName="background" AutoReverse="True" >
+				<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:4" Value="359"/>
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+	</Window.Resources>
+	<!--<Window.Triggers>
+		<EventTrigger RoutedEvent="FrameworkElement.Loaded">
+			<BeginStoryboard Storyboard="{StaticResource OnLoaded1}"/>
+		</EventTrigger>
+	</Window.Triggers>-->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="280*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Image Name="background" Stretch="Uniform" Source="/CameraControl;component/Images/logo_big.png" HorizontalAlignment="Center">
+        	<Image.RenderTransform>
+        		<TransformGroup>
+                    <RotateTransform/>
+                    <ScaleTransform/>
+        			<SkewTransform/>
+        			<TranslateTransform/>
+        		</TransformGroup>
+        	</Image.RenderTransform>
+        </Image>
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" >
+        <Image Stretch="Uniform" Source="Images/Two.png" Height="150" Margin="17" Name="ImageTwo" />
+            <!--<Label Content="Beta" HorizontalAlignment="Right" FontSize="25" Padding="0"/>-->
+        </StackPanel>
+        <ProgressBar IsIndeterminate="True" Panel.ZIndex="-3" Height="30" VerticalAlignment="Bottom" Grid.RowSpan="2" />
+        <Label Grid.Row="1" Content="Loading...." FontSize="15"/>
+        <Label Content="Label" Name="lbl_vers" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right"  HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" FontSize="15" Panel.ZIndex="-1" Grid.RowSpan="2">
+
+        </Label>
+    </Grid>
+</Window>

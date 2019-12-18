@@ -1,0 +1,385 @@
+﻿<Controls:MetroWindow  x:Class="CameraControl.windows.SettingsWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{T:TranslateExtension SettingsWindowTitle}" Height="550" Width="650" Loaded="Window_Loaded" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
+                       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                       TextElement.FontWeight="Regular"
+                       TextElement.FontSize="13"
+                       TextOptions.TextFormattingMode="Ideal"
+                       TextOptions.TextRenderingMode="Auto"
+                       Background="{DynamicResource MaterialDesignPaper}"
+                       FontFamily="{DynamicResource MaterialDesignFont}" 
+                       GlowBrush="{DynamicResource AccentColorBrush}"     
+                       
+                       xmlns:Core="clr-namespace:CameraControl.Core;assembly=CameraControl.Core" ShowMaxRestoreButton="False" ShowMinButton="False"
+                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                       xmlns:T="clr-namespace:CameraControl.Core.Translation;assembly=CameraControl.Core"
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       xmlns:Classes="clr-namespace:CameraControl.Core.Classes;assembly=CameraControl.Core"
+                       mc:Ignorable="d"
+                       d:DataContext="{d:DesignInstance Type=Classes:Settings, IsDesignTimeCreatable=True}" xmlns:my1="clr-namespace:CameraControl.windows"
+                       xmlns:Devices="clr-namespace:CameraControl.Devices;assembly=CameraControl.Devices"
+                       xmlns:controls="clr-namespace:CameraControl.Controls"
+                       xmlns:wpf="clr-namespace:CameraControl.Core.Wpf;assembly=CameraControl.Core"
+                       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ComboBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="{T:TranslateExtension ButtonHelp}" Name="btn_help" Click="btn_help_Click" Visibility="{Binding Source={x:Static Member=Core:ServiceProvider.Branding}, Path=OnlineReference, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="220*" />
+            <RowDefinition Height="41*" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="4">
+            <materialDesign:Card Margin="4" Background="{DynamicResource MaterialDesignBackground}">
+                <StackPanel>
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelGeneral}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <ComboBox Margin="4" SelectedValue="{Binding CurrentThemeNameNew}" ItemsSource="{Binding Themes}" 
+                                      Visibility="{Binding Path=Branding.UseThemeSelector, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension LabelTheme}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                            <ComboBox SelectedItem="{Binding SelectedMainForm}" Margin="4" materialDesign:HintAssist.Hint="{T:TranslateExtension LabelMainWindow}" Name="cmb_mainwindow"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                            <ComboBox  ItemsSource="{Binding Source={x:Static Member=T:TranslationManager.AvailableLangs}}" DisplayMemberPath="Name" SelectedValuePath="Value"  SelectedValue="{Binding SelectedLanguage}" Margin="4"
+                                       materialDesign:HintAssist.Hint="{T:TranslateExtension LabelInterfaceLanguage}"
+                                       Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding MinimizeToTrayIcon}" Content="{T:TranslateExtension LabelMinimizeToTryIcon}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding StartupWithWindows}" Content="{T:TranslateExtension LabelStartupWithWindows}"/>
+
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Margin="4" Text="{Binding StartupScript}" 
+                                     materialDesign:HintAssist.Hint="{T:TranslateExtension LabelStartupScript}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                <Button Grid.Column="1" Content="..." HorizontalAlignment="Left" Margin="4" Name="btn_browse_scriptfile" VerticalAlignment="Center" Click="btn_browse_scriptfile_Click" />
+                            </Grid>
+                            <Label    Content="{T:TranslateExtension ReStartToolTip}" FontStyle="Italic"/>
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelPreview}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <CheckBox Margin="4" IsChecked="{Binding PlaySound}" Content="{T:TranslateExtension LabelPlaySound}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding AutoPreview}" ToolTip="Disable this option if you use Lightroom" Content="{T:TranslateExtension LabelAutoPreview}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding AutoPreviewJpgOnly}" Content="{T:TranslateExtension LabelAutoPreviewJpgOnly}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding ShowThumbUpDown}" Content="{T:TranslateExtension LabelShowThumbUpDown}" />
+                            <CheckBox Margin="4" IsChecked="{Binding Autorotate}" Content="{T:TranslateExtension LabelAutorotate}" />
+                            <CheckBox Margin="4" IsChecked="{Binding DontLoadThumbnails}" Content="{T:TranslateExtension LabelDontLoadThumbs}" />
+
+                            <ComboBox SelectedIndex="{Binding RotateIndex}" Margin="4"
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension LabelRotateImage}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                <ComboBoxItem Content="{T:TranslateExtension LabelRotateNone}" />
+                                <ComboBoxItem Content="{T:TranslateExtension LabelRotate90}" />
+                                <ComboBoxItem Content="{T:TranslateExtension LabelRotate180}" />
+                                <ComboBoxItem Content="{T:TranslateExtension LabelRotate270}" />
+                            </ComboBox>
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Margin="4" Text="{Binding ExternalViewer}" 
+                                         materialDesign:HintAssist.Hint="{T:TranslateExtension LabelExternalViewerPath}"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                <Button Grid.Column="1" Content="..." HorizontalAlignment="Left" Margin="4" Name="btn_browse_file" VerticalAlignment="Center" Click="btn_browse_file_Click" />
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelFullscreen}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Margin="4" Content="{T:TranslateExtension LabelFullscrenBack}" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                                <wpf:Colorpicker  Margin="4" SelectedColor="{Binding FullScreenColor, Mode=TwoWay}" />
+                            </StackPanel>
+                            <CheckBox Margin="4" IsChecked="{Binding Preview}" Content="{T:TranslateExtension LabelPreviewAfterCapture}"/>
+                            <TextBox Margin="4" Text="{Binding PreviewSeconds}"
+                                     materialDesign:HintAssist.Hint="{T:TranslateExtension LabelPreviewTime}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding UseExternalViewer}" VerticalAlignment="Center" Content="{T:TranslateExtension LabelUseExternalViewer}" />
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Margin="4" Text="{Binding ExternalViewerPath}" 
+                                         materialDesign:HintAssist.Hint="{T:TranslateExtension LabelExternalPreViewerPath}"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                <Button Grid.Column="1" Content="..." HorizontalAlignment="Left" Margin="4" Name="button4" VerticalAlignment="Center" Click="button4_Click" />
+                            </Grid>
+                            <TextBox Margin="4" Text="{Binding ExternalViewerArgs}" 
+                                     materialDesign:HintAssist.Hint="{T:TranslateExtension LabelExternalPreViewerArgs}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding FullScreenInSecondaryMonitor}"  Content="{T:TranslateExtension LabelShowSecondary}"/>
+                            <CheckBox Margin="4" IsChecked="{Binding ShowFullscreenControls}" Content="{T:TranslateExtension LabelShowFullscreenControls}"/>
+                            <TextBox Margin="4" Text="{Binding FullScreenPassword}"
+                                     materialDesign:HintAssist.Hint="{T:TranslateExtension LabelPasswordOnClose}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelKeyboardTrigger}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <ItemsControl ItemsSource="{Binding Actions}" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding Path=Name}" Margin="2" Width="200"/>
+                                            <CheckBox IsChecked="{Binding Path=Alt}" Content="Alt" Margin="5"/>
+                                            <CheckBox IsChecked="{Binding Path=Ctrl}" Content="Ctrl" Margin="5"/>
+                                            <ComboBox SelectedItem="{Binding Path=Key}" ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=my1:SettingsWnd, AncestorLevel=1}, Path=AvailableKeys}" Width="150" Margin="2"/>
+                                            <CheckBox IsChecked="{Binding Path=Global}" Content="Global" Margin="5" ToolTip="System wide available"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelWebserver}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <CheckBox Content="{T:TranslateExtension LabelUseWebserver}" IsChecked="{Binding UseWebserver}" Margin="4"/>
+                            <TextBox Margin="4" Text="{Binding WebserverPort}"
+                                     materialDesign:HintAssist.Hint="{T:TranslateExtension LabelWebserverPort}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <CheckBox Content="{T:TranslateExtension LabelAllowWebCommands}" IsChecked="{Binding AllowWebserverActions}" Margin="4" IsEnabled="{Binding UseWebserver}"/>
+                            <CheckBox Content="{T:TranslateExtension LabelPublicWebserver}" IsChecked="{Binding PublicWebserver}" Margin="4" IsEnabled="{Binding UseWebserver}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="MJPEG Stream address " Margin="4"/>
+                                <TextBox Text="http://127.0.0.1:5514/live" VerticalAlignment="Center" IsReadOnly="True"/>
+                            </StackPanel>
+                            <Label    Content="{T:TranslateExtension ReStartToolTip}" FontStyle="Italic"/>
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelDevices}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="276*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="273" />
+                                    <ColumnDefinition Width="347*" />
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Header="{T:TranslateExtension LabelAvailableDevices}" MinHeight="200" >
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="276*" />
+                                            <RowDefinition Height="35" />
+                                        </Grid.RowDefinitions>
+                                        <ListBox Name="lst_device" ItemsSource="{Binding DeviceConfigs.Items}" DisplayMemberPath="Name" Margin="4" />
+                                        <Button Content="{T:Translate ButtonAdd}"  Margin="4" Name="btn_add_device" VerticalAlignment="Top" Grid.Row="1" Click="btn_add_device_Click" HorizontalAlignment="Left" />
+                                        <Button Content="{T:Translate ButtonDelete}" Margin="4" Name="btn_del_device" VerticalAlignment="Top" Grid.Row="1" Click="btn_del_device_Click" HorizontalAlignment="Right" />
+
+                                    </Grid>
+                                </GroupBox>
+
+                                <GroupBox Header="{T:TranslateExtension LabelDeviceSettings}" Grid.Column="1" Grid.RowSpan="3">
+                                    <Grid DataContext="{Binding ElementName=lst_device, Path=SelectedItem}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="115*" />
+                                            <ColumnDefinition Width="232*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="219*" />
+                                        </Grid.RowDefinitions>
+                                        <Label Content="{T:Translate LabelConfigName}" Name="label1" />
+                                        <TextBox Text="{Binding Name}" Grid.Row="0" Grid.Column="1" Margin="3"/>
+                                        <ContentControl  Name="config_stackpanel" Grid.ColumnSpan="2" Grid.Row="3" Content="{Binding Config}">
+
+                                        </ContentControl>
+                                        <Label Content="{T:Translate LabelDriver}" Grid.Row="1" />
+                                        <ComboBox Grid.Column="1" Grid.Row="1" Margin="3" ItemsSource="{Binding Source={x:Static Member=Core:ServiceProvider.ExternalDeviceManager}, Path=ExternalDeviceNames}" SelectedItem="{Binding DriverName}"/>
+                                    </Grid>
+                                </GroupBox>
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="5">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="{T:TranslateExtension LabelWaitForFocus}" Margin="5" Width="150"/>
+                                        <Controls:NumericUpDown Value="{Binding ExternalDeviceWaitForFocus}" Minimum="0" Margin="5"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="{T:TranslateExtension LabelWaitForCapture}" Margin="5" Width="150"/>
+                                        <Controls:NumericUpDown Value="{Binding ExternalDeviceWaitForCapture}" Minimum="0" Margin="5" />
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelSettingsLiveView}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="67*" />
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Nikon" Visibility="{Binding Source={x:Static Member=Core:ServiceProvider.Branding}, Path=ShowFocusControlLiveView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="1*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Grid.Column="0" Content="{T:TranslateExtension LabelSmallFocusSstep}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="0" Grid.Column="1" Minimum="1" Maximum="50" Value="{Binding SmalFocusStep}" Margin="3"/>
+
+                                        <Label Grid.Row="1" Grid.Column="0" Content="{T:TranslateExtension LabelMediumFocusStep}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="{Binding SmalFocusStep}" Maximum="250" Value="{Binding MediumFocusStep}" Margin="3"/>
+
+                                        <Label Grid.Row="2" Grid.Column="0" Content="{T:TranslateExtension LabelLargFocusStep}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="2" Grid.Column="1" Minimum="{Binding MediumFocusStep}" Maximum="1500" Value="{Binding LargeFocusStep}" Margin="3"/>
+                                    </Grid>
+                                </GroupBox>
+
+                                <GroupBox Grid.Row="0" Grid.Column="1" Header="Canon" Visibility="{Binding Source={x:Static Member=Core:ServiceProvider.Branding}, Path=ShowFocusControlLiveView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="1*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Grid.Column="0" Content="{T:TranslateExtension LabelSmallFocusSstep}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="0" Grid.Column="1" Minimum="1" Maximum="50" Value="{Binding SmallFocusStepCanon}" Margin="3"/>
+
+                                        <Label Grid.Row="1" Grid.Column="0" Content="{T:TranslateExtension LabelMediumFocusStep}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="{Binding SmallFocusStepCanon}" Maximum="250" Value="{Binding MediumFocusStepCanon}" Margin="3"/>
+
+                                        <Label Grid.Row="2" Grid.Column="0" Content="{T:TranslateExtension LabelLargFocusStep}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="2" Grid.Column="1" Minimum="{Binding MediumFocusStepCanon}" Maximum="1500" Value="{Binding LargeFocusStepCanon}" Margin="3"/>
+
+                                        <Label Grid.Row="3" Grid.Column="0" Content="{T:TranslateExtension LabelWaitBetweenSteps}" HorizontalContentAlignment="Right"/>
+                                        <Controls:NumericUpDown Grid.Row="3" Grid.Column="1" Minimum="5" Maximum="1500" Value="{Binding CanonFocusStepWait}" Margin="3"/>
+
+                                    </Grid>
+                                </GroupBox>
+
+                                <Label Content="{T:TranslateExtension LabelMotionDetectionType}" Grid.Row="4" HorizontalContentAlignment="Right" />
+                                <ComboBox Grid.Column="1" Grid.Row="4" Margin="3" ItemsSource="{Binding}" SelectedIndex="{Binding DetectionType}">
+                                    <ComboBoxItem Content="{T:TranslateExtension LabelTwoFramesDifferenceDetector}"/>
+                                    <ComboBoxItem Content="{T:TranslateExtension LabelSimpleBackgroundModelingDetector}"/>
+                                </ComboBox>
+
+                                <Label Grid.Row="5" Grid.Column="0" Content="{T:TranslateExtension LabelSmallestBlockSize}" HorizontalContentAlignment="Right"/>
+                                <Controls:NumericUpDown Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="250" Value="{Binding MotionBlockSize}" Margin="3"/>
+
+                                <Label Content="{T:TranslateExtension LabelEasyLiveViewControl}" Grid.Row="6" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
+                                <CheckBox Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="{Binding EasyLiveViewControl}" Margin="3"/>
+
+                                <Label Grid.Row="7" Grid.Column="0" Content="{T:TranslateExtension LabelLIveViewImageFreeze}" HorizontalContentAlignment="Right"/>
+                                <Controls:NumericUpDown Grid.Row="7" Grid.Column="1" Margin="3" Minimum="2" Maximum="120" Value="{Binding LiveViewFreezeTimeOut}"/>
+
+                                <Button Content="{T:TranslateExtension LabelShowOverlayFolder}" Grid.Column="1" Grid.Row="8" Name="btn_showoverlay" Click="button5_Click" Margin="3"/>
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Height="1" HorizontalAlignment="Stretch" SnapsToDevicePixels="True" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="False"  >
+                        <Expander.Header>
+                            <TextBlock Text="{T:TranslateExtension LabelAdvanced}" FontWeight="Bold"/>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" Margin="24,8,24,16">
+                            <CheckBox IsChecked="{Binding UseParallelTransfer}" Margin="4" Content="{T:TranslateExtension LabelUseParellelTransfer}"/>
+                            <CheckBox IsChecked="{Binding ShowUntranslatedLabelId}" Margin="4" Content="{T:TranslateExtension LabelShowUnTranslatedStringIds}"/>
+                            <CheckBox IsChecked="{Binding DisableNativeDrivers}" Margin="4" Content="{T:TranslateExtension LabelDisableDriver}" ToolTip="This option disable special handig of some cameras. Use this if you experience some problem" />
+                            <CheckBox IsChecked="{Binding AddFakeCamera}" Margin="4" Content="{T:TranslateExtension LabelAddFakeCamera}"/>
+                            <CheckBox IsChecked="{Binding SyncCameraDateTime}" Margin="4" Content="{T:TranslateExtension LabelSyncCameraDate}" />
+                            <CheckBox IsChecked="{Binding LoadThumbsDownload}" Margin="4" Content="{T:TranslateExtension LabelLoadThumbDownload}"/>
+                            <CheckBox IsChecked="{Binding SendUsageStatistics}" Margin="4" Content="{T:TranslateExtension LabelSendUsage}"/>
+                            <CheckBox IsChecked="{Binding LoadCanonTransferMode}" Margin="4" Content="{T:TranslateExtension LabelLoadCanonTransferMode}"/>
+                            <CheckBox IsChecked="{Binding HideTrayNotifications}" Margin="4" Content="{T:TranslateExtension LabelHideTrayNotifications}"/>
+                            <CheckBox IsChecked="{Binding DisableHardwareAccelerationNew}" Margin="4" Content="{T:TranslateExtension LabelDisableHardwareAcceleratione}"/>
+                            <CheckBox IsChecked="{Binding WebcamSupport}" Margin="4" Content="{T:TranslateExtension LabelWebcameraSupport}"/>
+                            <CheckBox IsChecked="{Binding WiaDeviceSupport}" Margin="4" Content="{T:TranslateExtension LabelWebcameraSupport}"/>
+                            <CheckBox IsChecked="{Binding WiaDeviceSupport}" Margin="4" Content="{T:TranslateExtension LabelWiaDeviceSupport}" />
+
+                            <Button Content="{T:TranslateExtension LabelClearCache}" Margin="4" Name="btn_clearcache" Click="btn_clearcache_Click" />
+
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </materialDesign:Card>
+        </ScrollViewer>
+
+        <Button Content="{T:TranslateExtension ButtonOk}" IsDefault="True" Name="button1" Width="75" Margin="12,12,0,16" Grid.Row="1" HorizontalAlignment="Left" Click="button1_Click" />
+        <Button Content="{T:TranslateExtension ButtonCancel}" IsCancel="True" Name="button2" Width="75" Margin="0,12,12,16" Grid.Row="1" Click="button2_Click" HorizontalAlignment="Right" />
+        <Button Content="{T:TranslateExtension ButtonLocateLogFile}" Name="button3" Click="button3_Click" Grid.Row="1" Margin="115,12,0,16" HorizontalAlignment="Left" Width="125" />
+        <Button Content="{T:TranslateExtension ButtonResetSettings}" Grid.Row="1" Name="btn_reset" Click="btn_reset_Click" Margin="0,12,113,16" HorizontalAlignment="Right" Width="140" />
+    </Grid>
+</Controls:MetroWindow >

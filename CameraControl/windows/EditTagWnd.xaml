@@ -1,0 +1,70 @@
+﻿<Controls:MetroWindow x:Class="CameraControl.windows.EditTagWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Classes="clr-namespace:CameraControl.Core.Classes;assembly=CameraControl.Core"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:T="clr-namespace:CameraControl.Core.Translation;assembly=CameraControl.Core"
+                      xmlns:controls="clr-namespace:CameraControl.Controls"
+                      xmlns:wpf="clr-namespace:CameraControl.Core.Wpf;assembly=CameraControl.Core"
+                      Title="{T:TranslateExtension EditTagWindowTitle}" Height="340" Width="397" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" IsMaxRestoreButtonEnabled="False" IsMinButtonEnabled="False" >
+    <Window.DataContext>
+        <Classes:TagItem/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />-->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="150*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="178*" />
+            <ColumnDefinition Width="197*" />
+        </Grid.ColumnDefinitions>
+        
+        <Label Content="{T:TranslateExtension LabelTagDisplayValue}" Grid.Row="1" Margin="2" HorizontalContentAlignment="Right"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Path=DisplayValue}" Margin="2" />
+
+        <Label Content="{T:TranslateExtension LabelTagValue}" Grid.Row="2" Margin="2" HorizontalContentAlignment="Right" />
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="2" Text="{Binding Path=Value}" />
+
+        <Label Grid.Column="0" Grid.Row="3" Content="{T:TranslateExtension LabelTagIncludeInGroup1}" Margin="2" HorizontalContentAlignment="Right" />
+        <CheckBox Grid.Column="1"  Grid.Row="3" Margin="2" IsChecked="{Binding Path=Tag1Checked}"/>
+
+        <Label Grid.Column="0" Grid.Row="4" Content="{T:TranslateExtension LabelTagIncludeInGroup2}" Margin="2" HorizontalContentAlignment="Right" />
+        <CheckBox Grid.Column="1" Grid.Row="4" Margin="2" IsChecked="{Binding Path=Tag2Checked}"/>
+
+        <Label Grid.Column="0" Grid.Row="5" Content="{T:TranslateExtension LabelTagIncludeInGroup3}" Margin="2" HorizontalContentAlignment="Right" />
+        <CheckBox Grid.Column="1" Grid.Row="5" Margin="2" IsChecked="{Binding Path=Tag3Checked}"/>
+
+        <Label Grid.Column="0" Grid.Row="6" Content="{T:TranslateExtension LabelTagIncludeInGroup4}" Margin="2" HorizontalContentAlignment="Right" />
+        <CheckBox Grid.Column="1" Grid.Row="6" Margin="2" IsChecked="{Binding Path=Tag4Checked}"/>
+
+        <Label Grid.Column="0" Grid.Row="7" Content="{T:TranslateExtension LabelColor}" Margin="2" HorizontalContentAlignment="Right" />
+        <wpf:Colorpicker Grid.Row="7" Grid.Column="1" Margin="3" SelectedColor="{Binding Color, Mode=TwoWay}" />
+        
+        <Button Content="{T:TranslateExtension ButtonSave}" Grid.Row="9" Height="23" HorizontalAlignment="Left" Margin="3" Name="btn_save" VerticalAlignment="Top" Width="75" Click="btn_save_Click" />
+        <Button Content="{T:TranslateExtension ButtonCancel}" Grid.Column="1" Grid.Row="9" Height="23" HorizontalAlignment="Right" Margin="3" Name="btn_cancel" VerticalAlignment="Top" Width="75" Click="btn_cancel_Click" />
+    </Grid>
+</Controls:MetroWindow>

@@ -1,0 +1,194 @@
+<UserControl x:Class="CameraControl.Controls.Controler"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d" 
+             d:DesignHeight="782" d:DesignWidth="150" BorderBrush="{x:Null}" BorderThickness="1" xmlns:my="clr-namespace:CameraControl.Controls"
+             xmlns:T="clr-namespace:CameraControl.Core.Translation;assembly=CameraControl.Core"
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:Core="clr-namespace:CameraControl.Core;assembly=CameraControl.Core"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Devices="clr-namespace:CameraControl.Devices;assembly=CameraControl.Devices"
+             Width="180">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary Source="pack://application:,,,/Styles/CustomControls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ExpanderEx.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />-->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ComboBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <T:TranslateConverter x:Key="converter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ComboBox Margin="4" ItemsSource="{Binding ConnectedDevices, Source={x:Static Core:ServiceProvider.DeviceManager}}" SelectedItem="{Binding SelectedCameraDevice, Source={x:Static Core:ServiceProvider.DeviceManager}}" DisplayMemberPath="DisplayName"></ComboBox>
+        <Grid Grid.Row="1" >
+            <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                <StackPanel  HorizontalAlignment="Stretch"  Name="wrapPanel1" VerticalAlignment="Top" Margin="4" >
+                    <StackPanel>
+                        <my:ExposureStatusControl x:Name="exposureStatusControl1" ExposureStatus="{Binding Path=SelectedCameraDevice.ExposureStatus, Mode=TwoWay}" />
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.Mode.Available, Converter={StaticResource BooleanToVisibilityConverter}}" >
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.Mode.ErrorColor}" >
+                            <ComboBox Name="cmb_mode" IsEnabled="{Binding Path=SelectedCameraDevice.Mode.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.Mode.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.Mode.Value}" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension Mode}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel  Visibility="{Binding SelectedCameraDevice.IsoNumber.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.IsoNumber.ErrorColor}" >
+                            <ComboBox Name="cmb_iso" IsEnabled="{Binding Path=SelectedCameraDevice.IsoNumber.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.IsoNumber.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.IsoNumber.Value}" GotFocus="cmb_shutter_GotFocus" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension Iso}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.ShutterSpeed.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.ShutterSpeed.ErrorColor}" >
+                            <ComboBox Name="cmb_shutter" IsEnabled="{Binding Path=SelectedCameraDevice.ShutterSpeed.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.ShutterSpeed.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.ShutterSpeed.Value}" GotFocus="cmb_shutter_GotFocus" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension ShutterSpeed}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.FNumber.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.FNumber.ErrorColor}" >
+                            <ComboBox Name="cmb_aperture" IsEnabled="{Binding Path=SelectedCameraDevice.FNumber.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.FNumber.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.FNumber.Value}" GotFocus="cmb_shutter_GotFocus" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension Aperture}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.WhiteBalance.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.WhiteBalance.ErrorColor}" >
+                            <ComboBox Name="cmb_WB" IsEnabled="{Binding Path=SelectedCameraDevice.WhiteBalance.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.WhiteBalance.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.WhiteBalance.Value}" ToolTip="{Binding Path=SelectedCameraDevice.WhiteBalance.Value}" GotFocus="cmb_shutter_GotFocus" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension WhiteBalance}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Converter={StaticResource converter}}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.ExposureCompensation.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.ExposureCompensation.ErrorColor}" >
+                            <ComboBox Name="cmb_EComp" IsEnabled="{Binding Path=SelectedCameraDevice.ExposureCompensation.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.ExposureCompensation.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.ExposureCompensation.Value}" GotFocus="cmb_shutter_GotFocus" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension ExposureComp}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.CompressionSetting.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.CompressionSetting.ErrorColor}" >
+                            <ComboBox Name="cmb_com" IsEnabled="{Binding Path=SelectedCameraDevice.CompressionSetting.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.CompressionSetting.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.CompressionSetting.Value}" ToolTip="{Binding Path=SelectedCameraDevice.CompressionSetting.Value}" GotFocus="cmb_shutter_GotFocus" 
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension Compression}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.ExposureMeteringMode.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.ExposureMeteringMode.ErrorColor}" >
+                            <ComboBox Name="cmb_meter"  IsEnabled="{Binding Path=SelectedCameraDevice.ExposureMeteringMode.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.ExposureMeteringMode.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.ExposureMeteringMode.Value}" GotFocus="cmb_shutter_GotFocus" ToolTip="{Binding Path=SelectedCameraDevice.ExposureMeteringMode.Value}"
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension MeteringMode}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}" >
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Converter={StaticResource converter}}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding SelectedCameraDevice.FocusMode.Available, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border BorderThickness="1" BorderBrush="{Binding Path=SelectedCameraDevice.FocusMode.ErrorColor}" >
+                            <ComboBox Name="cmb_focus" IsEnabled="{Binding Path=SelectedCameraDevice.FocusMode.IsEnabled}" ItemsSource="{Binding Path=SelectedCameraDevice.FocusMode.Values}" SelectedValue="{Binding Path=SelectedCameraDevice.FocusMode.Value}" GotFocus="cmb_shutter_GotFocus" ToolTip="{Binding Path=SelectedCameraDevice.FocusMode.Value}"
+                                      materialDesign:HintAssist.Hint="{T:TranslateExtension FocusMode}"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}" >
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Content="{Binding Converter={StaticResource converter}}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Border>
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding Path=SelectedCameraDevice.Properties}" HorizontalAlignment="Left">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <materialDesign:Card Margin="4" >
+                                    <StackPanel Margin="4" >
+                                        <Border BorderThickness="1" BorderBrush="{Binding Path=ErrorColor}" >
+                                            <ComboBox IsEnabled="{Binding Path=IsEnabled}" ItemsSource="{Binding Path=Values}" SelectedValue="{Binding Path=Value}" ToolTip="{Binding Value}"
+                                                      materialDesign:HintAssist.Hint="{Binding Path=Name, Converter={StaticResource converter}}"
+                                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Label Content="{Binding Converter={StaticResource converter}}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Border>
+                                    </StackPanel>
+                                </materialDesign:Card>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <!--<StackPanel Orientation="Horizontal" Margin="4">
+                        <Label Content="{T:TranslateExtension LabelHostMode}"/>
+                        <ToggleButton  IsChecked="{Binding Path=SelectedCameraDevice.HostMode}" Margin="3" Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                    </StackPanel>-->
+                    <ItemsControl Name="listBox1" ItemsSource="{Binding Path=SelectedCameraDevice.AdvancedProperties}" HorizontalAlignment="Stretch"  Margin="0">
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="{x:Type FrameworkElement}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Available}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                    <StackPanel Margin="0" >
+                                        <Border BorderThickness="1" BorderBrush="{Binding Path=ErrorColor}">
+                                            <ComboBox IsEnabled="{Binding Path=IsEnabled}" ItemsSource="{Binding Path=Values}" SelectedValue="{Binding Path=Value}" ToolTip="{Binding Value}" 
+                                                      materialDesign:HintAssist.Hint="{Binding Path=Name, Converter={StaticResource converter}}"
+                                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Converter={StaticResource converter}}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <StackPanel Grid.Row="2" Grid.Column="0">
+            <StackPanel Margin="4" Visibility="{Binding Source={x:Static Member=Core:ServiceProvider.Branding}, Path=ShowBattery, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Label Content="{T:TranslateExtension Battery}"/>
+                <ProgressBar Minimum="0" Maximum="100" Height="20" Value="{Binding Path=SelectedCameraDevice.Battery}" ToolTip="{Binding Path=SelectedCameraDevice.Battery}"/>
+            </StackPanel>
+            <StackPanel Margin="4" Grid.RowSpan="2">
+                <ComboBox Name="cmb_transfer" SelectionChanged="cmb_transfer_SelectionChanged" ToolTip="{Binding ElementName=cmb_transfer, Path=SelectedItem}"
+                          materialDesign:HintAssist.Hint="{T:TranslateExtension LabelTransfer}"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}">
+                </ComboBox>
+            </StackPanel>
+            <Grid>
+            <TextBlock Text="{Binding Source={x:Static Member=Devices:StaticHelper.Instance}, Path=SystemMessage}"  Padding="1" Margin="3" ToolTip="{Binding Source={x:Static Member=Devices:StaticHelper.Instance}, Path=SystemMessage}" />
+                
+            <Image VerticalAlignment="Top" Source="{Binding Path=SelectedCameraDevice.DeviceName, Converter={StaticResource CameraToImageSourceConverter}}" x:Name="IcoImage" RenderTransformOrigin="0,1" Canvas.ZIndex="100"
+                        Visibility="{Binding Source={x:Static Member=Core:ServiceProvider.Branding}, Path=ShowAnimation, Converter={StaticResource BooleanToVisibilityConverter}}">
+            </Image>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

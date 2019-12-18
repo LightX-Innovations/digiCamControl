@@ -1,0 +1,12 @@
+﻿:;request:session
+:;request:session;format:json
+:;request:cameras
+:;request:cameras;format:json
+:;command:capture;serial:<serial>
+:;command:starliveview;serial:<serial>
+:;command:captureliveview;serial:<serial>
+:;command:manualfocus;serial:<serial>;step:<serial>
+:;command:stopliveview;serial:<serial>
+
+
+ 
