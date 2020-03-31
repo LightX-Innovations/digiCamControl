@@ -43,6 +43,7 @@ using Canon.Eos.Framework;
 using Canon.Eos.Framework.Eventing;
 using Canon.Eos.Framework.Internal;
 using Canon.Eos.Framework.Internal.SDK;
+using PortableDeviceLib;
 
 #endregion
 
@@ -643,7 +644,7 @@ namespace CameraControl.Devices.Canon
             LiveViewImageZoomRatio = new PropertyValue<long> {Name = "LiveViewImageZoomRatio"};
             LiveViewImageZoomRatio.AddValues("All", 1);
             LiveViewImageZoomRatio.AddValues("5x", 5);
-            //LiveViewImageZoomRatio.AddValues("10x", 10);
+            LiveViewImageZoomRatio.AddValues("10x", 10);
             LiveViewImageZoomRatio.SetValue("All");
             LiveViewImageZoomRatio.ReloadValues();
             LiveViewImageZoomRatio.ValueChanged += LiveViewImageZoomRatio_ValueChanged;
@@ -851,7 +852,7 @@ namespace CameraControl.Devices.Canon
 
         public override bool Init(DeviceDescriptor deviceDescriptor)
         {
-            //StillImageDevice = new StillImageDevice(deviceDescriptor.WpdId);
+            //StillImageDevice = deviceDescriptor.StillImageDevice;
             //StillImageDevice.ConnectToDevice(AppName, AppMajorVersionNumber, AppMinorVersionNumber);
             //StillImageDevice.DeviceEvent += _stillImageDevice_DeviceEvent;
             Capabilities.Add(CapabilityEnum.Bulb);
@@ -1419,8 +1420,8 @@ namespace CameraControl.Devices.Canon
                             viewData.ImageData = _liveViewImageData.ImageData;
                             viewData.ImageHeight = _liveViewImageData.ImageSize.Height;
                             viewData.ImageWidth = _liveViewImageData.ImageSize.Width;
-                            viewData.LiveViewImageHeight = 100;
-                            viewData.LiveViewImageWidth = 100;
+                            viewData.LiveViewImageHeight = _liveViewImageData.GetBitmap().Height;
+                            viewData.LiveViewImageWidth = _liveViewImageData.GetBitmap().Width;
                             viewData.FocusX = _liveViewImageData.ZommBounds.X +
                                               (_liveViewImageData.ZommBounds.Width / 2);
                             viewData.FocusY = _liveViewImageData.ZommBounds.Y +
@@ -1639,6 +1640,40 @@ namespace CameraControl.Devices.Canon
                 if (fil != null)
                 {
                     GetFile(fil, filename);
+                }
+            }
+        }
+
+        public override void TransferFile(object o, Stream stream)
+        {
+            // Sanity checks.
+            if (!stream.CanWrite)
+                throw new ArgumentException("Specified stream is not writable.", "stream");
+            lock (Locker)
+            {
+                IsBusy = true;
+                if (o is IntPtr)
+                {
+                    Log.Debug("Pointer file transfer started");
+                    try
+                    {
+                        IsBusy = true;
+                        Camera.PauseLiveview();
+                        Log.Debug("Camera.PauseLiveview();");
+                        var transporter = new EosImageTransporter();
+                        transporter.ProgressEvent += (i) => TransferProgress = (uint)i;
+                        Log.Debug("TransportInMemory");
+                        EosImageEventArgs imageEvent = transporter.TransportInMemory((IntPtr)o, Camera.Handle);
+                        imageEvent.GetStream().CopyTo(stream);
+                        Log.Debug("TransportInMemory DONE");
+                        Camera.ResumeLiveview();
+                        Log.Debug("Camera.ResumeLiveview(); DONE");
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error("Error transfer memory file", exception);
+                        //File.Delete(filename);
+                    }
                 }
             }
         }
