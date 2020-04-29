@@ -97,7 +97,7 @@ namespace Canon.Eos.Framework.Internal
         {
             var directoryItemInfo = GetDirectoryItemInfo(directoryItem);
             var stream = CreateFileStream(imagePath);
-            Edsdk.EdsSetProgressCallback(stream, progress, Edsdk.EdsProgressOption.Periodically, context);
+            //Edsdk.EdsSetProgressCallback(stream, progress, Edsdk.EdsProgressOption.Periodically, context);
             Transport(directoryItem, directoryItemInfo.Size, stream, true);
 
             return new EosFileImageEventArgs(imagePath);
@@ -109,7 +109,7 @@ namespace Canon.Eos.Framework.Internal
             var stream = CreateMemoryStream(directoryItemInfo.Size);
             try
             {
-                Edsdk.EdsSetProgressCallback(stream, progress, Edsdk.EdsProgressOption.Periodically, context);
+                //Edsdk.EdsSetProgressCallback(stream, progress, Edsdk.EdsProgressOption.Periodically, context);
                 Transport(directoryItem, directoryItemInfo.Size, stream, false);           
                 var converter = new EosConverter();
                 return new EosMemoryImageEventArgs(converter.ConvertImageStreamToBytes(stream)){FileName = directoryItemInfo.szFileName};

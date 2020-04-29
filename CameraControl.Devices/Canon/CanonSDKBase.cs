@@ -470,6 +470,7 @@ namespace CameraControl.Devices.Canon
         {
             AdvancedProperties.Add(InitDriveMode());
             AdvancedProperties.Add(InitFlahEc());
+            AdvancedProperties.Add(InitFlash());
             AdvancedProperties.Add(InitBracket());
             AdvancedProperties.Add(InitAEBracket());
             foreach (PropertyValue<long> value in AdvancedProperties)
@@ -678,7 +679,7 @@ namespace CameraControl.Devices.Canon
         private void LiveViewImageZoomRatio_ValueChanged(object sender, string key, long val)
         {
             Camera.SetProperty(Edsdk.PropID_Evf_Zoom, val);
-            //Camera.LiveViewqueue.Enqueue(() => Camera.SetProperty(Edsdk.PropID_Evf_Zoom, val));
+            Camera.LiveViewqueue.Enqueue(() => Camera.SetProperty(Edsdk.PropID_Evf_Zoom, val));
         }
 
 
@@ -1283,7 +1284,7 @@ namespace CameraControl.Devices.Canon
             Log.Debug("EOS capture end");
         }
 
-        private uint ResetShutterButton()
+        public uint ResetShutterButton()
         {
             Camera.SendCommand(Edsdk.CameraCommand_DoEvfAf, 0);
             //ErrorCodes.GetCanonException(Camera.SendCommand(Edsdk.CameraCommand_DoEvfAf, 0));
@@ -1349,6 +1350,45 @@ namespace CameraControl.Devices.Canon
                 Monitor.Exit(Locker);
             }
             Log.Debug("EOS capture end");
+        }
+
+        public void CapturePhotoBurstNoAf()
+        {
+            Log.Debug("EOS capture start");
+            //Monitor.Enter(Locker);
+            try
+            {
+                if (Camera.IsInHostLiveViewMode && Camera.ImageQuality.SecondaryImageFormat != EosImageFormat.Unknown)
+                {
+                    //throw new Exception("RAW+JPG capture in live view not supported");
+                }
+                IsBusy = true;
+                Camera.PauseLiveview();
+                ErrorCodes.GetCanonException(ResetShutterButton());
+                ErrorCodes.GetCanonException(Camera.SendCommand(Edsdk.CameraCommand_PressShutterButton, (int)Edsdk.EdsShutterButton.CameraCommand_ShutterButton_Completely_NonAF));
+                //int index = (int)Camera.GetProperty(Edsdk.PropID_AvailableShots) - burst;
+                //while ((int)Camera.GetProperty(Edsdk.PropID_AvailableShots) > index)
+                //{
+                //    Thread.Sleep(1);
+                //}
+                //ResetShutterButton();
+                //index = 0;
+            }
+            catch (COMException comException)
+            {
+                IsBusy = false;
+                ErrorCodes.GetException(comException);
+            }
+            catch
+            {
+                IsBusy = false;
+                throw;
+            }
+            //finally
+            //{
+            //    Monitor.Exit(Locker);
+            //}
+            //Log.Debug("EOS capture end");
         }
 
         public override void StartBulbMode()
@@ -1586,7 +1626,7 @@ namespace CameraControl.Devices.Canon
                         Camera.PauseLiveview();
                         Log.Debug("Camera.PauseLiveview();");
                         var transporter = new EosImageTransporter();
-                        transporter.ProgressEvent += (i) => TransferProgress = (uint) i;
+                        //transporter.ProgressEvent += (i) => TransferProgress = (uint) i;
                         Log.Debug("TransportAsFileName");
                         transporter.TransportAsFileName((IntPtr) o, filename, Camera.Handle);
                         Log.Debug("TransportAsFileName DONE");
@@ -1661,9 +1701,9 @@ namespace CameraControl.Devices.Canon
                         Camera.PauseLiveview();
                         Log.Debug("Camera.PauseLiveview();");
                         var transporter = new EosImageTransporter();
-                        transporter.ProgressEvent += (i) => TransferProgress = (uint)i;
+                        //transporter.ProgressEvent += (i) => TransferProgress = (uint)i;
                         Log.Debug("TransportInMemory");
-                        EosImageEventArgs imageEvent = transporter.TransportInMemory((IntPtr)o, Camera.Handle);
+                        EosMemoryImageEventArgs imageEvent = transporter.TransportInMemory((IntPtr)o, Camera.Handle);
                         imageEvent.GetStream().CopyTo(stream);
                         Log.Debug("TransportInMemory DONE");
                         Camera.ResumeLiveview();
@@ -1677,6 +1717,42 @@ namespace CameraControl.Devices.Canon
                 }
             }
         }
+
+        public byte[] TransferFile(object o)
+        {
+            lock (Locker)
+            {
+                IsBusy = true;
+                if (o is IntPtr)
+                {
+                    Log.Debug("Pointer file transfer started");
+                    try
+                    {
+                        IsBusy = true;
+                        Camera.PauseLiveview();
+                        Log.Debug("Camera.PauseLiveview();");
+                        var transporter = new EosImageTransporter();
+                        transporter.ProgressEvent += (i) => TransferProgress = (uint)i;
+                        Log.Debug("TransportInMemory");
+                        EosMemoryImageEventArgs imageEvent = transporter.TransportInMemory((IntPtr)o, Camera.Handle);
+                        //buffer = new byte[imageEvent.ImageData.Length];
+                        //imageEvent.ImageData.CopyTo(buffer, 0);
+                        Log.Debug("TransportInMemory DONE");
+                        Camera.ResumeLiveview();
+                        Log.Debug("Camera.ResumeLiveview(); DONE");
+                        return imageEvent.ImageData;
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error("Error transfer memory file", exception);
+                        //File.Delete(filename);
+                        return null;
+                    }
+                }
+                return null;
+            }
+        }
+
 
         public override string GetProhibitionCondition(OperationEnum operationEnum)
         {
