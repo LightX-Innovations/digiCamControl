@@ -163,7 +163,21 @@ namespace Canon.Eos.Framework.Internal.SDK
         public const uint   PropID_Evf_ColorTemperature    = 0x00000503;
         public const uint   PropID_Evf_DepthOfFieldPreview = 0x00000504;
 
-		// EVF IMAGE DATA Properties
+        /*----------------------------------
+		 Flash Properties
+		----------------------------------*/
+        public const uint PropID_StroboSetting             = 0x01000515;
+        public const uint PropID_StroboWirelessSetting             = 0x01000516;
+        public const uint PropID_StroboFiring             = 0x01000517;
+        public const uint PropID_StroboDispState             = 0x01000432;
+        public const uint PropID_StroboExchangeHistory = 0x0100044b;
+
+
+
+        public const uint PropData_FlashFromManual         = 0x00011104;
+        public const uint PropData_FlashFromETTL           = 0x00001104;
+
+        // EVF IMAGE DATA Properties
         public const uint   PropID_Evf_Zoom                = 0x00000507;
         public const uint   PropID_Evf_ZoomPosition        = 0x00000508;
         public const uint   PropID_Evf_FocusAid            = 0x00000509;
@@ -222,7 +236,8 @@ namespace Canon.Eos.Framework.Internal.SDK
 	        CameraCommand_ShutterButton_Completely			= 0x00000003,
 	        CameraCommand_ShutterButton_Halfway_NonAF		= 0x00010001,
 	        CameraCommand_ShutterButton_Completely_NonAF	= 0x00010003,
-        } 
+        }
+
         #endregion
 
         #region Camera status command
@@ -667,6 +682,75 @@ namespace Canon.Eos.Framework.Internal.SDK
 			kEdsImageQualityForLegacy_Unknown = 0xffffffff,
         }
 
+        public enum FlashArgs : uint
+        {
+            EdsFlashON      = 0x00000001,    /* Flash OFF */
+            EdsFlashSR      = 0x00000002,    /* send and receive */
+            EdsFlashOFF     = 0x00000003,    /* Flash OFF */
+            EdsFlashMode    = 0x00000100,    /* Flash Manual or ETTL */
+            EdsFlashZoom    = 0x00000400,    
+            EdsFlashSynch   = 0x00000800,
+            EdsFlashOutTime = 0x00001000,
+        }
+
+        public enum FlashModeArgs : uint
+        {
+            ETTL            = 0x00000000,
+            Manual          = 0x00010000,
+        }
+
+        public enum FlashZoomArgs : uint
+        {
+            AUTO            = 0x00000000,
+            Zoom24mm        = 0x03000000,
+            Zoom28mm        = 0x05000000,
+            Zoom35mm        = 0x07000000,
+            Zoom50mm        = 0x09000000,
+            Zoom70mm        = 0x0b000000,
+            Zoom80mm        = 0x0d000000,
+            Zoom105mm       = 0x0f000000,
+        }
+
+        public enum FlashSyncArgs : uint
+        {
+            Sync1stCurtain = 0x00000000,
+            Sync2ndCurtain = 0x00004000,
+        }
+
+        public enum FlashOutTimeArgs : uint
+        {
+            // 1/128
+            Time1_128       = 0x00380000,
+            Time1_128_03    = 0x00350000,
+            Time1_128_07    = 0x00320000,
+            // 1/64
+            Time1_64        = 0x00300000,
+            Time1_64_03     = 0x002d0000,
+            Time1_64_07     = 0x002a0000,
+            // 1/32
+            Time1_32        = 0x00280000,
+            Time1_32_03     = 0x00250000,
+            Time1_32_07     = 0x00220000,
+            // 1/16
+            Time1_16        = 0x00200000,
+            Time1_16_03     = 0x001d0000,
+            Time1_16_07     = 0x001a0000,
+            // 1/8
+            Time1_8         = 0x00180000,
+            Time1_8_03      = 0x00150000,
+            Time1_8_07      = 0x00120000,
+            // 1/4
+            Time1_4         = 0x00100000,
+            Time1_4_03      = 0x000d0000,
+            Time1_4_07      = 0x000a0000,
+            // 1/2
+            Time1_2         = 0x00080000,
+            Time1_2_03      = 0x00050000,
+            Time1_2_07      = 0x00020000,
+            // 1/1
+            Time1_1         = 0x00000000,
+        }
+
         #endregion
 
         #region Event IDs
@@ -1065,6 +1149,18 @@ namespace Canon.Eos.Framework.Internal.SDK
             Marshal.FreeHGlobal(ptr);
 
             return err;
+        }
+
+        public static uint EdsGetPropertyData(IntPtr inRef, uint inPropertyID, int inParam, out byte[] outPropertyData)
+        {
+            int outSize;
+            int propertySize = (int)Edsdk.EdsGetPropertySize(inRef, inPropertyID, 0, out Edsdk.EdsDataType edsDataType, out outSize);
+            IntPtr num = Marshal.AllocHGlobal(outSize);
+            uint propertyData = Edsdk.EdsGetPropertyData(inRef, inPropertyID, inParam, outSize, num);
+            outPropertyData = new byte[outSize];
+            Marshal.Copy(num, outPropertyData, 0, outSize);
+            Marshal.FreeHGlobal(num);
+            return propertyData;
         }
         #endregion
 

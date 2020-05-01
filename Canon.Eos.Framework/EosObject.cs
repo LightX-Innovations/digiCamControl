@@ -264,6 +264,13 @@ namespace Canon.Eos.Framework
                 propertyId, data));
         }
 
+        public void SetPropertyByteArrayData(uint propertyId, byte[] data)
+        {
+            this.ExecuteSetter(() => Util.Assert(Edsdk.EdsSetPropertyData(this.Handle, propertyId, 0, Marshal.SizeOf(typeof(byte)) * data.Length, data),
+                string.Format("Failed to set property byte array data: propertyId {0}, data {1}", propertyId, data),
+                propertyId, data));
+        }
+
         protected void SetPropertyStringData(uint propertyId, string data, int maxByteLength)
         {
             this.ExecuteSetter(() =>
